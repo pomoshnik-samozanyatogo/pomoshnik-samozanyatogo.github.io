@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Помощник самозанятого — бухгалтер и секретарь в чате</title>
+<meta name="description" content="Перешлите сообщение клиента — помощник ответит, запишет заказ, проследит за оплатой и напомнит пробить чек. Налог и лимит 2,4 млн под контролем. 299 ₽ в месяц.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f7a5c'/%3E%3Ctext x='16' y='23' font-size='19' font-family='Arial' font-weight='700' fill='white' text-anchor='middle'%3E%D0%9F%3C/text%3E%3C/svg%3E">
+<meta property="og:title" content="Помощник самозанятого — бухгалтер и секретарь в чате">
+<meta property="og:description" content="Переписка с клиентами, заказы, оплаты, чеки и налог — помощник делает рутину за вас.">
+<style>
+:root{
+  --bg:#f7f5f0; --card:#ffffff; --ink:#1d2421; --muted:#5d6762; --line:#e4e0d6;
+  --accent:#1f7a5c; --accent-ink:#ffffff; --accent-soft:#e3f1ea; --warn:#b4541f;
+  --bubble-me:#dcefe5; --bubble-bot:#ffffff; --chat-bg:#eef0ec;
+  --radius:16px; --shadow:0 10px 30px rgba(20,30,25,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:5;background:rgba(247,245,240,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:700;display:flex;align-items:center;gap:8px}
+.logo i{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;font-style:normal}
+.btn{display:inline-block;border:0;border-radius:12px;padding:13px 20px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;text-align:center}
+.btn-main{background:var(--accent);color:var(--accent-ink)}
+.btn-main:hover{filter:brightness(1.08)}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn-sm{padding:9px 14px;font-size:14px;white-space:nowrap;flex:none}
+#demo,#price{scroll-margin-top:72px}
+.chips{scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+section{padding:56px 0}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.12;margin:0 0 16px;letter-spacing:-.02em}
+h2{font-size:clamp(24px,3.6vw,34px);line-height:1.2;margin:0 0 24px;letter-spacing:-.01em}
+.lead{font-size:18px;color:var(--muted);margin:0 0 24px}
+.tag{display:inline-block;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:13px;padding:5px 10px;border-radius:99px;margin-bottom:16px}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding-top:40px}
+.hero>*{min-width:0}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap}
+.note{font-size:14px;color:var(--muted);margin-top:14px}
+
+/* demo chat */
+.phone{background:#1d2421;border-radius:34px;padding:10px;box-shadow:var(--shadow);max-width:400px;margin:0 auto;width:100%}
+.screen{background:var(--chat-bg);border-radius:26px;overflow:hidden;display:flex;flex-direction:column;height:560px}
+.chat-head{background:var(--card);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.ava{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700}
+.chat-head b{display:block;font-size:15px}
+.chat-head small{color:var(--accent);font-size:12px}
+.msgs{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:86%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.45;white-space:pre-line;box-shadow:0 1px 1px rgba(0,0,0,.05);animation:pop .25s ease}
+.m.me{align-self:flex-end;background:var(--bubble-me);border-bottom-right-radius:4px}
+.m.bot{align-self:flex-start;background:var(--bubble-bot);border-bottom-left-radius:4px}
+.m .fwd{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+.m .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.m .acts span{font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:5px 9px;border-radius:8px}
+.typing{align-self:flex-start;background:var(--bubble-bot);padding:10px 14px;border-radius:14px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#9aa49f;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+@keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 10px 4px;background:var(--card);border-top:1px solid var(--line)}
+.chip{flex:none;border:1.5px solid var(--accent);color:var(--accent);background:#fff;border-radius:99px;padding:7px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.chip:disabled{opacity:.4;cursor:default}
+.inputbar{display:flex;gap:8px;padding:8px 10px 12px;background:var(--card)}
+.inputbar input{flex:1;border:1.5px solid var(--line);border-radius:99px;padding:10px 14px;font:inherit;font-size:14px;min-width:0}
+.inputbar button{border:0;background:var(--accent);color:#fff;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer}
+.demo-hint{text-align:center;font-size:13px;color:var(--muted);margin-top:10px}
+
+/* blocks */
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.card h3{margin:0 0 8px;font-size:18px}
+.card p{margin:0;color:var(--muted);font-size:15px}
+.emo{font-size:26px;margin-bottom:10px;display:block}
+.step-n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;margin-bottom:12px}
+.feat{display:flex;gap:14px;align-items:flex-start}
+.feat .emo{margin:0}
+.trust{background:var(--accent);color:#fff;border-radius:24px;padding:36px}
+.trust h2{color:#fff}
+.trust .card{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+.trust .card p{color:rgba(255,255,255,.85)}
+.price{display:flex;flex-direction:column}
+.price .sum{font-size:34px;font-weight:700;margin:8px 0 2px}
+.price .sum small{font-size:16px;color:var(--muted);font-weight:500}
+.price ul{padding:0;margin:16px 0 22px;list-style:none;flex:1}
+.price li{padding:6px 0 6px 26px;position:relative;font-size:15px}
+.price li:before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700}
+.price li.no{color:var(--muted)}
+.price li.no:before{content:"—";color:#b9beb9}
+.price.hot{border:2px solid var(--accent);position:relative}
+.badge{position:absolute;top:-13px;left:22px;background:var(--warn);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:10px}
+summary{font-weight:600;cursor:pointer}
+details p{color:var(--muted);margin:10px 0 0}
+.final{text-align:center}
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,25,22,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal.open{display:flex}
+.modal .box{background:var(--card);border-radius:20px;max-width:440px;width:100%;padding:28px;position:relative;animation:pop .2s ease}
+.modal .x{position:absolute;top:10px;right:14px;border:0;background:none;font-size:26px;cursor:pointer;color:var(--muted)}
+.modal h3{margin:0 0 10px;font-size:22px}
+.modal p{color:var(--muted);margin:0 0 16px}
+.offer{background:var(--accent-soft);border-radius:12px;padding:14px;margin-bottom:18px;font-size:15px}
+.offer b{color:var(--accent)}
+
+@media (max-width:880px){
+  .hero{grid-template-columns:1fr;gap:32px;padding-top:24px}
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  section{padding:40px 0}
+  .g4,.g2{grid-template-columns:1fr}
+  .screen{height:520px}
+  .trust{padding:24px;border-radius:18px}
+  header .btn-sm{padding:8px 12px}
+  .logo{font-size:15px;line-height:1.2}
+  .cta-row .btn{flex:1 1 100%}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo"><i>П</i><span class="brand">Помощник самозанятого</span></div>
+    <button class="btn btn-main btn-sm" data-buy="header">Ранний доступ</button>
+  </div>
+</header>
+
+<main>
+<section class="wrap hero">
+  <div>
+    <span class="tag">Для самозанятых · запуск в январе 2027</span>
+    <h1 id="h1">Перешлите сообщение клиента — ответ готов, заказ записан, оплата под контролем</h1>
+    <p class="lead" id="lead">Помощник в чате берёт на себя переписку с клиентами, учёт заказов, чеки и налог. Как свой бухгалтер и секретарь — только за 299 ₽ в месяц.</p>
+    <div class="cta-row">
+      <button class="btn btn-main" data-buy="hero">Получить ранний доступ</button>
+      <a class="btn btn-ghost" href="#demo" id="try">Попробовать демо ↓</a>
+    </div>
+    <p class="note">Первым 100 — год за 990 ₽ вместо 2 990 ₽.</p>
+  </div>
+
+  <div id="demo">
+    <div class="phone"><div class="screen">
+      <div class="chat-head"><div class="ava">П</div><div><b>Помощник</b><small>онлайн</small></div></div>
+      <div class="msgs" id="msgs"></div>
+      <div class="chips" id="chips"></div>
+      <form class="inputbar" id="inputbar"><input id="inp" placeholder="Напишите, что случилось…" autocomplete="off"><button aria-label="Отправить">➤</button></form>
+    </div></div>
+    <p class="demo-hint">Это демо: нажимайте на подсказки под чатом</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Знакомо?</h2>
+  <div class="grid g4">
+    <div class="card"><span class="emo">💬</span><h3>Вечер уходит на переписку</h3><p>Уточнить ТЗ, назвать цену, напомнить про оплату, вежливо отказать — и так каждый день.</p></div>
+    <div class="card"><span class="emo">🧾</span><h3>«Чек пробью потом»</h3><p>А потом забывается. Штраф за непробитый чек — 20 % суммы, повторно — 100 %.</p></div>
+    <div class="card"><span class="emo">⏳</span><h3>Клиент тянет с оплатой</h3><p>Неловко напоминать в третий раз, а таблица «кто сколько должен» давно не обновлялась.</p></div>
+    <div class="card"><span class="emo">📊</span><h3>Сколько налога? Не вылечу ли за лимит?</h3><p>Доход считается в уме, а лимит 2,4 млн в год подкрадывается незаметно.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Как это работает</h2>
+  <div class="grid g3">
+    <div class="card"><span class="step-n">1</span><h3>Перешлите или напишите</h3><p>Сообщение клиента — кнопкой «Поделиться». Или просто: «Игорь оплатил 15 000».</p></div>
+    <div class="card"><span class="step-n">2</span><h3>Помощник всё подготовит</h3><p>Черновик ответа, заказ со сроком и суммой, данные для чека, налог за месяц.</p></div>
+    <div class="card"><span class="step-n">3</span><h3>Вы подтверждаете</h3><p>Отправить как есть, поправить или отложить. Без вашего «ок» ничего не уходит.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Что умеет помощник</h2>
+  <div class="grid g2">
+    <div class="card feat"><span class="emo">✍️</span><div><h3>Отвечает клиентам за вас</h3><p>Готовит ответы в вашем стиле: уточнить задачу, назвать цену, напомнить об оплате, перенести срок.</p></div></div>
+    <div class="card feat"><span class="emo">📅</span><div><h3>Записи — сразу в вашем календаре</h3><p>Знает свободные окна и предлагает их клиенту. Запись появляется в календаре телефона: Google, Яндекс или iPhone.</p></div></div>
+    <div class="card feat"><span class="emo">💸</span><div><h3>Следит за оплатами</h3><p>Видит, кто не заплатил, и предлагает вежливое напоминание в нужный момент.</p></div></div>
+    <div class="card feat"><span class="emo">🧾</span><div><h3>Не даёт забыть про чек</h3><p>После оплаты — готовые данные для «Мой налог» и напоминание, пока чек не пробит.</p></div></div>
+    <div class="card feat"><span class="emo">📈</span><div><h3>Считает налог и лимит</h3><p>Сколько заработано, сколько платить и до какого числа, сколько осталось до 2,4 млн.</p></div></div>
+    <div class="card feat"><span class="emo">🙋</span><div><h3>Отвечает на вопросы самозанятого</h3><p>Возврат денег, банк просит документы, работа с ООО — простыми словами и по закону.</p></div></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="trust">
+    <h2>Помощник ничего не делает без вас</h2>
+    <div class="grid g3">
+      <div class="card"><h3>Только черновики</h3><p>Каждый ответ клиенту вы видите и подтверждаете сами.</p></div>
+      <div class="card"><h3>Пароль от «Мой налог» не нужен</h3><p>Чек вы пробиваете сами в один тап, помощник только всё подготовит.</p></div>
+      <div class="card"><h3>Данные хранятся в России</h3><p>Серверы в РФ, обработка по 152-ФЗ, ваши данные не продаём и не передаём.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="price">
+  <h2>Сколько стоит</h2>
+  <div class="grid g3">
+    <div class="card price">
+      <h3>Бесплатно</h3>
+      <div class="sum">0 ₽</div>
+      <ul>
+        <li>Учёт заказов и оплат</li>
+        <li>Налог и лимит 2,4 млн</li>
+        <li>Напоминания о чеках</li>
+        <li>3 черновика ответов клиентам в месяц</li>
+        <li>Ответы на частые вопросы о налогах</li>
+        <li class="no">Напоминания о сроках и долгах</li>
+        <li class="no">Акты и счета в PDF</li>
+      </ul>
+      <button class="btn btn-ghost" data-buy="free">Записаться</button>
+    </div>
+    <div class="card price">
+      <h3>Помощник</h3>
+      <div class="sum">299 ₽ <small>/ месяц</small></div>
+      <ul>
+        <li>Всё из бесплатного</li>
+        <li>Черновики ответов клиентам — до 300 в месяц</li>
+        <li>Любые вопросы о налогах — до 50 в месяц</li>
+        <li>Напоминания о сроках и долгах</li>
+        <li>Акты, счета, договоры в PDF</li>
+        <li>7 дней бесплатно</li>
+      </ul>
+      <button class="btn btn-main" data-buy="month">Купить</button>
+    </div>
+    <div class="card price hot">
+      <span class="badge">Ранний доступ · первым 100</span>
+      <h3>Помощник на год</h3>
+      <div class="sum">990 ₽ <small>/ год</small></div>
+      <ul>
+        <li>Всё из тарифа «Помощник»</li>
+        <li>83 ₽ в месяц вместо 299 ₽</li>
+        <li>Влияете на то, какие функции появятся первыми</li>
+        <li>Цена 990 ₽ сохраняется при продлении</li>
+      </ul>
+      <button class="btn btn-main" data-buy="early">Забронировать</button>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Вопросы</h2>
+  <details><summary>Где будет работать помощник?</summary><p>В веб-приложении: открывается в браузере и ставится на экран телефона как обычное приложение, на iPhone и Android. Позже добавим ботов в мессенджерах.</p></details>
+  <details><summary>Как пересылать сообщения клиентов?</summary><p>На Android — кнопкой «Поделиться» прямо из мессенджера. На iPhone — скопировать и вставить. Можно и просто написать своими словами.</p></details>
+  <details><summary>Помощник сам пробивает чеки?</summary><p>Нет: чек вы пробиваете в «Мой налог» сами, а помощник готовит все данные и напоминает, пока чек не пробит. Так безопаснее — пароль от налоговой никому не нужно отдавать.</p></details>
+  <details><summary>Можно ли доверять ответам по налогам?</summary><p>Помощник опирается на Налоговый кодекс и разъяснения ФНС и всегда говорит, если вопрос лучше уточнить в налоговой. Это помощь, а не юридическая консультация.</p></details>
+  <details><summary>Когда запуск?</summary><p>В январе 2027. Те, кто записался на ранний доступ, получат приглашение первыми.</p></details>
+  <details><summary>А если мне не подойдёт?</summary><p>Бесплатный тариф остаётся навсегда, а у платного есть 7 дней бесплатно. За ранний доступ вернём деньги, если запуск не состоится до 1 марта 2027.</p></details>
+</section>
+
+<section class="wrap final">
+  <h2>Пусть рутиной занимается помощник</h2>
+  <p class="lead">А вы — работой и клиентами.</p>
+  <button class="btn btn-main" data-buy="final">Получить ранний доступ</button>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><span class="brand">Помощник самозанятого</span> · проект в разработке, запуск в январе 2027</span>
+    <a href="privacy.html">Политика конфиденциальности</a>
+  </div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+  <div class="box">
+    <button class="x" id="mclose" aria-label="Закрыть">×</button>
+    <h3 id="mtitle">Мы запускаемся в январе 2027</h3>
+    <p>Помощник сейчас в разработке. Запишитесь — пришлём приглашение одним из первых.</p>
+    <div class="offer">Первым 100 — <b>год за 990 ₽</b> вместо 2 990 ₽. Сейчас платить ничего не нужно.</div>
+    <a class="btn btn-main" id="formlink" href="#" target="_blank" rel="noopener" style="display:block">Записаться — 1 минута</a>
+    <p class="note" style="margin:12px 0 0">Нажимая, вы переходите к короткой форме. <a href="privacy.html">Как мы обращаемся с данными</a></p>
+  </div>
+</div>
+
+<script>
+// ===== НАСТРОЙКИ — заполнить перед публикацией =====
+const CONFIG = {
+  brand: "Помощник самозанятого",
+  metrikaId: 113668091,  // номер счётчика Яндекс Метрики
+  formUrl: "https://forms.yandex.ru/u/6ad52d7b95add5c4d4eae12c/"  // Яндекс Форма (имя, контакт, согласие на обработку ПДн)
+};
+
+// ===== Варианты заголовка (A/B/C) =====
+const VARIANTS = {
+  a: {h1: "Перешлите сообщение клиента — ответ готов, заказ записан, оплата под контролем",
+      lead: "Помощник в чате берёт на себя переписку с клиентами, учёт заказов, чеки и налог. Как свой бухгалтер и секретарь — только за 299 ₽ в месяц."},
+  b: {h1: "Свой бухгалтер в чате за 299 ₽",
+      lead: "Просто напишите, что заработали, — помощник запишет оплату, напомнит пробить чек, посчитает налог и проследит за лимитом 2,4 млн. А заодно ответит клиентам за вас."},
+  c: {h1: "Меньше рутины — больше времени на работу",
+      lead: "Помощник самозанятого ведёт переписку с клиентами, заказы, оплаты, чеки и налог. Вы только подтверждаете — остальное он делает сам."}
+};
+function pickVariant(){
+  const q = new URLSearchParams(location.search).get("v");
+  if (q && VARIANTS[q]) return q;
+  let v = null;
+  try { v = localStorage.getItem("lv"); } catch(e) {}
+  if (!v || !VARIANTS[v]) {
+    v = "abc"[Math.floor(Math.random()*3)];
+    try { localStorage.setItem("lv", v); } catch(e) {}
+  }
+  return v;
+}
+const variant = pickVariant();
+document.getElementById("h1").textContent = VARIANTS[variant].h1;
+document.getElementById("lead").textContent = VARIANTS[variant].lead;
+document.querySelectorAll(".brand").forEach(el => el.textContent = CONFIG.brand);
+
+// ===== Яндекс Метрика =====
+function goal(name, params){
+  try { if (CONFIG.metrikaId && window.ym) ym(CONFIG.metrikaId, "reachGoal", name, Object.assign({variant}, params||{})); } catch(e) {}
+}
+if (CONFIG.metrikaId) {
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0];k.async=1;k.src=r;a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+  ym(CONFIG.metrikaId, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, params:{variant}});
+}
+
+// ===== Кнопки «Купить» (fake door) =====
+const modal = document.getElementById("modal");
+const formlink = document.getElementById("formlink");
+document.querySelectorAll("[data-buy]").forEach(b => b.addEventListener("click", () => {
+  const plan = b.dataset.buy;
+  goal("buy_click", {plan});
+  formlink.href = CONFIG.formUrl ? CONFIG.formUrl + (CONFIG.formUrl.includes("?") ? "&" : "?") + "plan=" + plan + "&variant=" + variant : "#";
+  modal.classList.add("open");
+}));
+formlink.addEventListener("click", e => {
+  if (!CONFIG.formUrl) { e.preventDefault(); alert("Форма ещё не подключена (CONFIG.formUrl)."); return; }
+  goal("form_open");
+});
+function closeModal(){ modal.classList.remove("open"); }
+document.getElementById("mclose").onclick = closeModal;
+modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+document.getElementById("try").addEventListener("click", () => goal("demo_scroll"));
+
+// ===== Демо-чат =====
+const SCENES = [
+  { chip: "📩 Переслать сообщение клиента",
+    me: {fwd: "Переслано от Игоря", text: "Здравствуйте! Нужен лендинг для студии йоги до пятницы. Бюджет 15 000. Сделаете?"},
+    bot: [
+      "Записала заказ 📋\nКлиент: Игорь\nУслуга: лендинг для студии йоги\nСумма: 15 000 ₽\nСрок: пятница, 24 октября",
+      {text: "Черновик ответа:\n«Здравствуйте, Игорь! Да, успею к пятнице. Чтобы начать, пришлите, пожалуйста, тексты, логотип и пару сайтов, которые нравятся. Предоплата — 50 %, 7 500 ₽».", acts: ["Отправить как есть", "Изменить"]},
+      "Напомню вам в четверг вечером, что завтра сдача ⏰"
+    ]},
+  { chip: "💸 Клиент оплатил",
+    me: {text: "Игорь оплатил 15 000 переводом"},
+    bot: [
+      "Отметила оплату ✅ Заказ закрыт.",
+      {text: "Не забудьте чек 🧾\nУслуга: «Разработка лендинга»\nСумма: 15 000 ₽\nПокупатель: физлицо", acts: ["Скопировать", "Открыть «Мой налог»"]},
+      "Пришлите ссылку на чек — я прикреплю его к заказу.\n\nЗа октябрь заработано 62 000 ₽. Налог ≈ 2 480 ₽, оплатить до 28 ноября."
+    ]},
+  { chip: "⏳ Кто мне должен?",
+    me: {text: "Кто мне сейчас должен?"},
+    bot: [
+      "Не оплачено 2 заказа на 9 000 ₽:\n• Ольга — макеты, 5 000 ₽, просрочка 4 дня\n• Студия «Лён» — баннер, 4 000 ₽, срок оплаты завтра",
+      {text: "Напомнить Ольге? Черновик:\n«Ольга, добрый день! Напоминаю про оплату макетов — 5 000 ₽. Реквизиты те же. Если что-то мешает, напишите, договоримся 🙂»", acts: ["Отправить", "Подождать"]}
+    ]},
+  { chip: "🏦 Банк просит пояснить переводы",
+    me: {text: "Банк заблокировал карту и просит пояснить переводы. Что делать?"},
+    bot: [
+      "Без паники, это частая история. Что сделать:\n1. Ответьте банку в срок, указанный в запросе.\n2. Приложите справку о постановке на учёт и справку о доходах из «Мой налог».\n3. По каждому переводу — чек и договор или переписку с клиентом.",
+      {text: "Я собрала все ваши заказы за 3 месяца с чеками в один PDF и подготовила текст пояснения для банка.", acts: ["Скачать PDF", "Показать текст"]}
+    ]},
+  { chip: "📈 Сколько до лимита?",
+    me: {text: "Сколько я заработала за год и сколько до лимита?"},
+    bot: [
+      "С января заработано 486 000 ₽ 📊\nДо лимита 2,4 млн осталось 1 914 000 ₽.\nПри нынешнем темпе лимит не закончится — можно спокойно работать.",
+      "Налог за год: 19 440 ₽, все платежи вовремя ✅"
+    ]}
+];
+const msgs = document.getElementById("msgs");
+const chips = document.getElementById("chips");
+let busy = false, demoUsed = false;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function addMsg(who, data){
+  const d = document.createElement("div");
+  d.className = "m " + who;
+  const o = typeof data === "string" ? {text: data} : data;
+  if (o.fwd) { const f = document.createElement("span"); f.className = "fwd"; f.textContent = "↪ " + o.fwd; d.appendChild(f); }
+  d.appendChild(document.createTextNode(o.text));
+  if (o.acts) { const a = document.createElement("div"); a.className = "acts"; o.acts.forEach(t => { const s = document.createElement("span"); s.textContent = t; a.appendChild(s); }); d.appendChild(a); }
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+async function botSay(list){
+  for (const item of list) {
+    const t = document.createElement("div"); t.className = "typing"; t.innerHTML = "<i></i><i></i><i></i>";
+    msgs.appendChild(t); msgs.scrollTop = msgs.scrollHeight;
+    await wait(700 + Math.min(1400, (typeof item === "string" ? item : item.text).length * 8));
+    t.remove(); addMsg("bot", item);
+    await wait(250);
+  }
+}
+async function play(i){
+  if (busy) return;
+  busy = true; setChips(true);
+  if (!demoUsed) { demoUsed = true; goal("demo_used"); }
+  goal("demo_scene", {scene: i});
+  addMsg("me", SCENES[i].me);
+  await wait(400);
+  await botSay(SCENES[i].bot);
+  busy = false; setChips(false);
+}
+function setChips(dis){ chips.querySelectorAll("button").forEach(b => b.disabled = dis); }
+SCENES.forEach((s, i) => { const b = document.createElement("button"); b.className = "chip"; b.textContent = s.chip; b.onclick = () => play(i); chips.appendChild(b); });
+document.getElementById("inputbar").addEventListener("submit", async e => {
+  e.preventDefault();
+  const inp = document.getElementById("inp");
+  const text = inp.value.trim(); if (!text || busy) return;
+  inp.value = ""; busy = true; setChips(true);
+  goal("demo_typed");
+  addMsg("me", text);
+  await botSay(["В демо я отвечаю только на примеры — нажмите на подсказку ниже 👇\nВ настоящем помощнике можно писать что угодно своими словами."]);
+  busy = false; setChips(false);
+});
+botSay(["Привет! Я ваш помощник 👋\nПересылайте сообщения клиентов или пишите, что случилось, — я всё запишу и подготовлю.\n\nПопробуйте примеры ниже 👇"]);
+</script>
+</body>
+</html>
